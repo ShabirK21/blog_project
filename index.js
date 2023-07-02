@@ -15,16 +15,20 @@ global.db = new sqlite3.Database("./database.db", function (err) {
 });
 
 const userRoutes = require("./routes/user");
-
+const adminRoutes = require("./routes/admin");
 //set the app to use ejs for rendering
 app.set("view engine", "ejs");
+//use public folder for static files
 app.use(express.static("public"));
+//user landing page
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.render("home");
 });
 
 //this adds all the userRoutes to the app under the path /user
-app.use("/user", userRoutes);
+//app.use("/user", userRoutes);
+//this adds all the adminRoutes to the app under the path /admin
+app.use("/admin", adminRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
