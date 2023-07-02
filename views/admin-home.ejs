@@ -1,5 +1,52 @@
 <%- include('base.ejs'); %>
 
-<body>
-  <h1 class="grid place-content-center">This is the admin home page</h1>
+<body class="flex flex-col h-screen justify-between">
+  <header class="h-10 bg-slate-800">
+    <nav class="grid grid-cols-3">
+      <div class="place-content-start m-1">
+        <span class="text-2xl text-white">My Blog</span>
+      </div>
+      <div class="place-content-center m-1">
+        <span class="text-2xl text-white font-bold">Author Home Page</span>
+      </div>
+      <div class="place-content-end ml-auto mt-1 mr-1">
+        <button class="text-sm p-1 font-bold rounded bg-slate-500 hover:bg-indigo-500">
+        <a href="/admin/edit-articles">Edit Articles</a></button>
+        <button class="text-sm p-1 font-bold rounded bg-slate-500 hover:bg-indigo-500">
+        <a href="/admin/settings">Settings</a></button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="flex-grow">
+    <div class="container mx-auto mt-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% articles.forEach(function(article) { %>
+          <div class="bg-white rounded shadow-lg p-6">
+            <span><%= article.id %></span>
+            <div class="font-bold text-xl mb-2"><%= article.title %></div>
+            <p class="text-gray-700 text-base">
+              <%= article.content %>
+            </p>
+            <div class="flex justify-between items-center mt-4">
+              <span><%= article.author %></span>
+              <span><%= article.publication_date %></span>
+            </div>
+            <form action="/admin/articles/<%= article.id %>/delete" method="POST" class="top-2 right-2">
+              <button type="submit" class="text-sm p-1 font-bold text-red-600 hover:text-red-800">
+                Delete
+              </button>
+            </form>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </main>
+
+  <footer class="h-10 bg-slate-800">
+    <div class="m-1 text-white">
+      <p>Author: Name</p>
+    </div>
+  </footer>
+
 </body>
