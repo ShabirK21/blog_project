@@ -12,7 +12,7 @@ router.get("/", (req, res, next) => {
     }
   });
 });
-
+// delete article from database
 router.post("/articles/:id/delete", (req, res, next) => {
   const articleId = req.params.id;
   global.db.run("DELETE FROM articles WHERE id = ?", articleId, function (err) {
@@ -22,6 +22,21 @@ router.post("/articles/:id/delete", (req, res, next) => {
       res.redirect("/admin");
     }
   });
+});
+// publish article
+router.post("/articles/:id/publish", (req, res, next) => {
+  const articleId = req.params.id;
+  global.db.run(
+    "UPDATE articles SET draft_published = 'published' WHERE id = ?",
+    articleId,
+    function (err) {
+      if (err) {
+        next(err); //send the error on to the error handler
+      } else {
+        res.redirect("/admin");
+      }
+    }
+  );
 });
 
 router.get("/settings", (req, res) => {
