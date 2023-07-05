@@ -1,47 +1,73 @@
 <%- include('base.ejs'); %>
 
-<body class="flex flex-col h-screen justify-between">
-  <header class="h-10 bg-slate-800">
-    <nav class="grid grid-cols-3">
-      <div class="place-content-start m-1">
-        <span class="text-2xl text-white">My Blog</span>
+<body class="flex flex-row min-h-screen">
+  <header class="flex-initial w-max bg-slate-800">
+    <%blog_settings.forEach(function(setting){%>
+    <nav class="grid">
+      <div class="m-1">
+        <p class="text-center text-2xl text-white font-bold mt-2"><%= setting.title%></p>
+        <p class="text-center text-xl text-white font-bold p-2 italic"><%= setting.subtitle%></p>
+        <p class="text-center text-white">By</p>
+        <p class="text-center text-2xl text-white font-bold mt-3"><%= setting.author%></p>
       </div>
-      <div class="place-content-center m-1">
-        <span class="text-2xl text-white font-bold">Author Home Page</span>
+      <div class="mt-10 ml-auto">
+        <button onclick="location.href='/admin'" class="text-sm bg-slate-700 hover:bg-slate-100 text-green-400 font-bold py-2 px-5 rounded-tl rounded-bl inline-flex items-center">
+          <i class="fas fa-home mr-2"></i>
+          <span>Home</span>
+        </button>
       </div>
-      <div class="place-content-end ml-auto mt-1 mr-1">
-        <button class="text-sm p-1 font-bold rounded bg-slate-500 hover:bg-indigo-500">
-        <a href="/admin/edit-articles">Create new draft</a></button>
-        <button class="text-sm p-1 font-bold rounded bg-slate-500 hover:bg-indigo-500">
-        <a href="/admin/settings">Settings</a></button>
+      <div class="mt-5 ml-auto">
+        <button onclick="location.href='/admin/edit-articles'" class="text-sm bg-slate-700 hover:bg-slate-100 text-green-400 font-bold py-2 px-5 rounded-tl rounded-bl inline-flex items-center">
+          <i class="fas fa-pen mr-2"></i>
+          <span>Create new draft</span>
+        </button>
+      </div>
+      <div class="mt-5 ml-auto">
+        <button onclick="location.href='/admin/settings'" class="text-sm bg-slate-700 hover:bg-slate-100 text-green-400 font-bold py-2 px-5 rounded-tl rounded-bl inline-flex items-center">
+          <i class="fas fa-cog mr-2"></i>
+          <span>Settings</span>
+        </button>
       </div>
     </nav>
+    <%});%>
   </header>
 
   <main class="flex-grow">
   <!--Published Articles-->
     <div class="grid place-content-center">
-      <h2 class="text-2xl mt-2 p-1 font-bold rounded bg-sky-500">Published Articles</h2>
+      <h2 class="text-2xl mt-2 p-1 font-bold rounded underline">Published Articles</h2>
     </div>
     <div class="container mx-auto mt-4">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <% articles.forEach(function(article) { if (article.draft_published == "published"){ %>
+        <% articles.forEach(function(article) { if (article.draft_or_published == "published"){ %>
           <div class="bg-white rounded shadow-lg p-6">
-            <div class="font-bold text-xl mb-2"><%= article.title %></div>
-            <p class="text-gray-700 text-base">
-              <%= article.content %>
-            </p>
+            <div class="font-bold text-2xl"><%- article.title %></div>
+            <p class="text-xl font-bold mb-3"><%- article.subtitle%></p>
             <div class="flex justify-between items-center mt-4">
-              <span><%= article.author %></span>
+              <span>Created on:</span>
               <span><%= article.publication_date %></span>
             </div>
-            <div class="flex justify-between">
-              <form action="/admin/articles/<%= article.id %>/delete" method="POST" class="top-2 right-2">
-                <button type="submit" class="text-sm p-2 font-bold text-red-600 hover:text-red-800 rounded-lg bg-red-100">
-                  Delete
-                </button>
-              </form>
-              <!--To increment likes -> UPDATE articles SET likes = likes + 1 WHERE id = article_id-->
+            <div class="flex justify-between items-center mt-1">
+              <span>Published on:</span>
+              <span><%= article.last_modified %></span>
+            </div>
+            <div class="flex justify-between items-center mt-1">
+              <span>Modified on:</span>
+              <span><%= article.last_modified %></span>
+            </div>
+            <div class="flex justify-between mt-2">
+              <div class="flex">
+                <form action="/admin/edit-articles/<%= article.id %>" method="GET" class="top-2 right-2">
+                  <button type="submit" class="text-sm p-2 font-bold text-yellow-600 hover:text-yellow-800 rounded-lg bg-yellow-100 mr-1">
+                    Edit
+                  </button>
+                </form>
+                <form action="/admin/articles/<%= article.id %>/delete" method="POST" class="top-2 right-2">
+                  <button type="submit" class="text-sm p-2 font-bold text-red-600 hover:text-red-800 rounded-lg bg-red-100">
+                    Delete
+                  </button>
+                </form>
+              </div>
               <i class="fas fa-thumbs-up pt-3"> <%= article.likes%></i>
             </div>
           </div>
@@ -50,24 +76,26 @@
     </div>
     <!--Draft Articles-->
     <div class="grid place-content-center">
-      <h2 class="text-2xl my-2 p-1 font-bold rounded bg-sky-500">Draft Articles</h2>
+      <h2 class="text-2xl my-2 p-1 font-bold rounded underline">Draft Articles</h2>
     </div>
         <div class="container mx-auto my-3">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <% articles.forEach(function(article) { if (article.draft_published == "draft"){ %>
+        <% articles.forEach(function(article) { if (article.draft_or_published == "draft"){ %>
           <div class="bg-white rounded shadow-lg p-6">
-            <div class="font-bold text-xl mb-2"><%= article.title %></div>
-            <p class="text-gray-700 text-base">
-              <%= article.content %>
-            </p>
+            <div class="font-bold text-2xl"><%- article.title %></div>
+            <p class="text-xl font-bold mb-3"><%- article.subtitle%></p>
             <div class="flex justify-between items-center mt-4">
-              <span><%= article.author %></span>
-              <span><%= article.publication_date %></span>
+              <span>Modified date:<br><%= article.publication_date %></span>
             </div>
-            <div class="flex">
+            <div class="flex mt-5">
               <form action="/admin/articles/<%= article.id %>/publish" method="POST" class="top-2 right-2">
-                <button type="submit" class="text-sm p-2 font-bold text-blue-600 hover:text-blue-800 rounded-lg bg-blue-100 mr-1">
+                <button type="submit" class="text-sm p-2 font-bold text-green-600 hover:text-green-800 rounded-lg bg-green-100 mr-1">
                   Publish article
+                </button>
+              </form>
+              <form action="/admin/edit-articles/<%= article.id %>" method="GET" class="top-2 right-2">
+                <button type="submit" class="text-sm p-2 font-bold text-yellow-600 hover:text-yellow-800 rounded-lg bg-yellow-100 mr-1">
+                  Edit
                 </button>
               </form>
               <form action="/admin/articles/<%= article.id %>/delete" method="POST" class="top-2 right-2">
@@ -80,13 +108,7 @@
         <% }}); %>
       </div>
     </div>
-
   </main>
-
-  <footer class="h-10 bg-slate-800">
-    <div class="m-1 text-white">
-      <p>Author: Name</p>
-    </div>
-  </footer>
-
 </body>
+
+
