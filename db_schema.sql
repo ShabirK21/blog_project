@@ -1,27 +1,67 @@
-
 -- This makes sure that foreign_key constraints are observed and that errors will be thrown for violations
-PRAGMA foreign_keys=ON;
+PRAGMA foreign_keys = ON;
 
 BEGIN TRANSACTION;
 
---create your tables with SQL commands here (watch out for slight syntactical differences with SQLite)
+-- create a table to store admin details
+CREATE TABLE
+  IF NOT EXISTS admins (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL
+  );
 
-CREATE TABLE IF NOT EXISTS testUsers (
-    test_user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    test_name TEXT NOT NULL
-);
+-- create a table to store all articles
+CREATE TABLE
+  IF NOT EXISTS articles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    subtitle TEXT,
+    content TEXT NOT NULL,
+    author TEXT NOT NULL,
+    publication_date TEXT NOT NULL,
+    last_modified TEXT NOT NULL,
+    draft_or_published TEXT NOT NULL,
+    likes INT DEFAULT 0,
+    image_path TEXT
+  );
 
-CREATE TABLE IF NOT EXISTS testUserRecords (
-    test_record_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    test_record_value TEXT NOT NULL,
-    test_user_id  INT, --the user that the record belongs to
-    FOREIGN KEY (test_user_id) REFERENCES testUsers(test_user_id)
-);
+CREATE TABLE
+  IF NOT EXISTS userComments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    article_id INTEGER NOT NULL,
+    comment TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (article_id) REFERENCES articles (id)
+  );
 
---insert default data (if necessary here)
+INSERT INTO
+  admins (username, password)
+VALUES
+  (
+    'admin',
+    '$2b$10$G/RO0saqJ6mUdDBThwc6K.MUF8eHn3BVamoxLjNSpWJAQfweZDBOe'
+  );
 
-INSERT INTO testUsers ("test_name") VALUES ("Simon Star");
-INSERT INTO testUserRecords ("test_record_value", "test_user_id") VALUES( "Lorem ipsum dolor sit amet", 1); --try changing the test_user_id to a different number and you will get an error
+INSERT INTO
+  articles (
+    title,
+    content,
+    author,
+    publication_date,
+    last_modified,
+    draft_or_published,
+    image_path
+  )
+VALUES
+  (
+    'testArticle',
+    'testContent',
+    'testAuthor',
+    'testDate',
+    'testDate',
+    'draft',
+    'testPath'
+  );
 
 COMMIT;
-
