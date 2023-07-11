@@ -24,22 +24,25 @@ app.use(express.urlencoded({ extended: true }));
 
 //user landing page
 app.get("/", (req, res, next) => {
-  global.db.all("SELECT * FROM articles", function (err, articleRows) {
-    if (err) {
-      next(err); // send the error to the error handler
-    } else {
-      global.db.all("SELECT * FROM blog_settings", function (err, settings) {
-        if (err) {
-          next(err); // send the error to the error handler
-        } else {
-          res.render("user-home", {
-            articles: articleRows,
-            blog_settings: settings,
-          });
-        }
-      });
+  global.db.all(
+    "SELECT * FROM articles WHERE draft_or_published = 'published' ORDER BY publication_date DESC",
+    function (err, articleRows) {
+      if (err) {
+        next(err); // send the error to the error handler
+      } else {
+        global.db.all("SELECT * FROM blog_settings", function (err, settings) {
+          if (err) {
+            next(err); // send the error to the error handler
+          } else {
+            res.render("user-home", {
+              articles: articleRows,
+              blog_settings: settings,
+            });
+          }
+        });
+      }
     }
-  });
+  );
 });
 
 // require admin authentication
